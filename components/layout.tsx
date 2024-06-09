@@ -26,14 +26,16 @@ export default function Layout({ children }: LayoutProps) {
           <span>Nikola Suvajcevic</span>
         </p>
         <Button>
-          <Link href="https://github.com/suvajcevic-nikola/blog">
-            <a target="_blank" className="flex items-center justify-center gap-4">
-              <span>GitHub</span>
-              <Image width={28} src={githubIcon} alt="Source code on GitHub" />
-            </a>
+          <Link
+            href="https://github.com/suvajcevic-nikola/blog"
+            target="_blank"
+            className="flex items-center justify-center gap-4"
+          >
+            <span>GitHub</span>
+            <Image width={28} src={githubIcon} alt="Source code on GitHub" />
           </Link>
         </Button>
       </footer>
     </div>
   );
-}
+};
