@@ -156,7 +156,6 @@ const PostComments = ({ commentsData, postId }: PostArticleProps) => {
           {Array.isArray(sortedComments) && (
             <div className="flex flex-col gap-4">
               {sortedComments
-                .sort((a, b) => a.createdAt - b.createdAt)
                 .map((comment) => (
                   <CommentItem key={comment.id} comment={comment} />
                 ))}
