@@ -1,3 +1,4 @@
+import Head from "next/head";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import type { Post } from "@/types/post";
 import { PostArticle } from "@/components";
@@ -16,8 +17,13 @@ export default function Post({
   post,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
+    <>
+    <Head>
+      <title>{post.title}</title>
+    </Head>
     <div className="flex h-full w-full justify-center overflow-x-auto p-8">
       <PostArticle post={post} />
     </div>
+    </>
   );
 }
