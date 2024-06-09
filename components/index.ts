@@ -4,6 +4,4 @@ export { default as Button } from "./button";
 export { default as Layout } from "./layout";
 
 export { default as PostArticle } from "./post/article";
-export { default as PostDescription } from "./post/description";
-export { default as PostTime } from "./post/time";
-export { default as PostTitle } from "./post/title";
+export { default as PostListCard } from "./post/list-card";

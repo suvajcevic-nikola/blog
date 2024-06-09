@@ -11,11 +11,13 @@ type LayoutProps = {
   children: ReactElement | ReactElement[];
 };
 
-export default function Layout({ children }: LayoutProps) {
+const Layout = ({ children }: LayoutProps) => {
   return (
     <div className={`m-auto flex max-w-[1920px] flex-col ${inter.className}`}>
-      <header className="fixed h-28 w-full border-2 border-neutral-400 px-8 py-4 backdrop-blur-sm sm:static">
-        <h1 className="text-center text-7xl font-bold text-white">BLOG</h1>
+      <header className="fixed flex h-28 w-full items-center justify-center border-2 border-neutral-400 px-8 backdrop-blur-sm sm:static">
+        <Link href="/" className="text-center text-7xl font-bold text-white">
+          BLOG
+        </Link>
       </header>
       <main className="h-full min-h-screen w-full border-x-2 border-neutral-400 pt-28 sm:pt-0">
         {children}
@@ -39,3 +41,5 @@ export default function Layout({ children }: LayoutProps) {
     </div>
   );
 };
+
+export default Layout;

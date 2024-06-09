@@ -1,7 +1,7 @@
-import type { Post } from "@/types/post";
-import AllPosts from "./post";
-
+import Link from "next/link";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { Post } from "@/types/post";
+import { PostListCard } from "@/components";
 
 export const getServerSideProps = (async () => {
   const res = await fetch("https://5ebd9842ec34e900161923e7.mockapi.io/post");
@@ -9,8 +9,18 @@ export const getServerSideProps = (async () => {
   return { props: { posts } };
 }) satisfies GetServerSideProps<{ posts: Post[] }>;
 
-export default function Home({
+export default function AllPosts({
   posts,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return <AllPosts posts={posts} />;
+  return (
+    <div className="flex flex-wrap gap-4 overflow-x-auto p-8">
+      {posts
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .map((post) => (
+          <Link key={post.id} href={`/post/${post.id}`}>
+            <PostListCard post={post} />
+          </Link>
+        ))}
+    </div>
+  );
 }

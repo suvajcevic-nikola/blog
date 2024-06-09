@@ -5,3 +5,11 @@ export type Post = {
   description: string;
   text: string;
 };
+
+export type Comment = {
+  id: string;
+  postId: string;
+  name: string;
+  text: string;
+  createdAt: number;
+};
