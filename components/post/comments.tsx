@@ -8,14 +8,9 @@ import {
   useState,
 } from "react";
 import Button from "../button";
+import useComments from "@/hooks/useComments";
 
 type PostArticleProps = {
-  commentsData: {
-    isFetching: boolean;
-    isError: boolean;
-    comments: Comment[] | undefined;
-    refetch: () => void;
-  };
   postId: string;
 };
 
@@ -24,12 +19,7 @@ type FormState = {
   comment: string;
 };
 
-type NewComment = {
-  postId: string;
-  name: string;
-  text: string;
-  createdAt: number;
-};
+type NewComment = Omit<Comment, "id" | "createdAt">;
 
 type NewCommentFormProps = {
   postId: string;
@@ -77,7 +67,6 @@ const NewCommentForm = ({ postId, onSubmit }: NewCommentFormProps) => {
         postId: postId,
         name: formState.name,
         text: formState.comment,
-        createdAt: Date.now(),
       };
       formRef.current?.reset();
       onSubmit(newComment);
@@ -124,16 +113,17 @@ const CommentsLoader = () => (
   <div className="text-white">Loading comments...</div>
 );
 
-const PostComments = ({ commentsData, postId }: PostArticleProps) => {
-  const { isFetching, isError, comments, refetch } = commentsData;
-
-  const commentsCount = Array.isArray(comments) ? comments.length : 0;
+const PostComments = ({ postId }: PostArticleProps) => {
+  const { isFetching, isError, comments, refetch } = useComments(postId);
 
   const sortedComments = useMemo(() => {
     return Array.isArray(comments)
       ? comments.sort((a, b) => a.createdAt - b.createdAt)
       : [];
   }, [comments]);
+
+  const commentsCount = sortedComments.length;
+  const isEmptyComments = commentsCount < 1;
 
   const handleAddNewComment = (comment: NewComment) => {
     // This is a mock function that simulates adding a new comment and refetching the comments list
@@ -147,18 +137,17 @@ const PostComments = ({ commentsData, postId }: PostArticleProps) => {
 
   return (
     <div className="mt-4 flex flex-col items-start justify-start gap-6">
-      <NewCommentForm postId={postId} onSubmit={handleAddNewComment} />
-      {isFetching ? (
+      {isFetching && isEmptyComments ? (
         <CommentsLoader />
       ) : (
         <>
+          <NewCommentForm postId={postId} onSubmit={handleAddNewComment} />
           <div className="text-xl font-bold text-white">{`Comments (${commentsCount})`}</div>
-          {Array.isArray(sortedComments) && (
+          {sortedComments && (
             <div className="flex flex-col gap-4">
-              {sortedComments
-                .map((comment) => (
-                  <CommentItem key={comment.id} comment={comment} />
-                ))}
+              {sortedComments.map((comment) => (
+                <CommentItem key={comment.id} comment={comment} />
+              ))}
             </div>
           )}
         </>

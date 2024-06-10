@@ -10,14 +10,12 @@ type PostArticleProps = {
 };
 
 const PostArticle = ({ post }: PostArticleProps) => {
-  const commentsData = useComments(post.id);
-  
   return (
     <article className="mx-auto w-full max-w-[800px] space-y-8 p-8">
       <PostTime>{post.createdAt}</PostTime>
       <PostTitle>{post.title}</PostTitle>
       <PostText>{post.text}</PostText>
-      <PostComments commentsData={commentsData} postId={post.id} />
+      <PostComments postId={post.id} />
     </article>
   );
 };
