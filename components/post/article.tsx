@@ -3,7 +3,6 @@ import PostTitle from "./title";
 import PostTime from "./time";
 import PostText from "./text";
 import PostComments from "./comments";
-import useComments from "@/hooks/useComments";
 
 type PostArticleProps = {
   post: Post;
@@ -11,7 +10,7 @@ type PostArticleProps = {
 
 const PostArticle = ({ post }: PostArticleProps) => {
   return (
-    <article className="mx-auto w-full max-w-[800px] space-y-8 p-8">
+    <article data-test="post-article" className="mx-auto w-full max-w-[800px] space-y-8 p-8">
       <PostTime>{post.createdAt}</PostTime>
       <PostTitle>{post.title}</PostTitle>
       <PostText>{post.text}</PostText>

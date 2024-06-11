@@ -1,4 +1,3 @@
-import type { Comment } from "@/types/post";
 import {
   ChangeEvent,
   FormEvent,
@@ -8,7 +7,10 @@ import {
   useState,
 } from "react";
 import Button from "../button";
-import useComments from "@/hooks/useComments";
+import Spinner from "../spinner";
+import { useComments, useAddNewComment } from "@/hooks";
+import type { Comment, NewComment } from "@/types/post";
+import type { CustomError } from "@/types/data";
 
 type PostArticleProps = {
   postId: string;
@@ -19,11 +21,10 @@ type FormState = {
   comment: string;
 };
 
-type NewComment = Omit<Comment, "id" | "createdAt">;
-
 type NewCommentFormProps = {
   postId: string;
   onSubmit: (comment: NewComment) => void;
+  isLoadingSubmit: boolean;
 };
 
 const senderName = (name: unknown) => {
@@ -44,7 +45,11 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
   );
 };
 
-const NewCommentForm = ({ postId, onSubmit }: NewCommentFormProps) => {
+const NewCommentForm = ({
+  postId,
+  onSubmit,
+  isLoadingSubmit,
+}: NewCommentFormProps) => {
   const formRef = useRef<HTMLFormElement>(null);
 
   const defaultFormState: FormState = { name: "", comment: "" };
@@ -80,6 +85,7 @@ const NewCommentForm = ({ postId, onSubmit }: NewCommentFormProps) => {
       onSubmit={handleSubmit}
       onReset={() => setFormState(defaultFormState)}
       ref={formRef}
+      data-test="new-comment-form"
     >
       <label className="flex flex-col gap-2">
         <span className="text-white">Name</span>
@@ -102,19 +108,33 @@ const NewCommentForm = ({ postId, onSubmit }: NewCommentFormProps) => {
           rows={4}
         />
       </label>
-      <Button type="submit" disabled={formState.comment?.length < 1}>
-        Submit
-      </Button>
+      {isLoadingSubmit ? (
+        <Spinner srText="Adding new comment in progress..." />
+      ) : (
+        <Button type="submit" disabled={formState.comment?.length < 1}>
+          Submit
+        </Button>
+      )}
     </form>
   );
 };
 
-const CommentsLoader = () => (
-  <div className="text-white">Loading comments...</div>
-);
-
 const PostComments = ({ postId }: PostArticleProps) => {
-  const { isFetching, isError, comments, refetch } = useComments(postId);
+  const {
+    isFetching: isFetchingComments,
+    isError: isErrorComments,
+    comments,
+    error: commentsError,
+    refetch: refetchComments,
+  } = useComments(postId);
+
+  const { isLoading: isLoadingAddNewComment, addNewComment } = useAddNewComment(
+    {
+      postId,
+      onSuccess: onAddNewCommentSuccess,
+      onError: onAddNewCommentError,
+    },
+  );
 
   const sortedComments = useMemo(() => {
     return Array.isArray(comments)
@@ -125,31 +145,41 @@ const PostComments = ({ postId }: PostArticleProps) => {
   const commentsCount = sortedComments.length;
   const isEmptyComments = commentsCount < 1;
 
-  const handleAddNewComment = (comment: NewComment) => {
-    // This is a mock function that simulates adding a new comment and refetching the comments list
-    console.log("Adding new comment:", comment);
-    refetch();
+  const shouldShowSpinner = isFetchingComments && isEmptyComments;
+
+  const handleAddNewComment = async (comment: NewComment) => {
+    await addNewComment(comment);
   };
 
-  if (isError) {
+  function onAddNewCommentSuccess() {
+    refetchComments();
+  }
+
+  function onAddNewCommentError(error: CustomError) {
+    alert(`"Failed to add new comment: ${error.message ?? "Unknown error"}`);
+  }
+
+  if (isErrorComments && commentsError?.status === 500) {
     return null;
   }
 
   return (
     <div className="mt-4 flex flex-col items-start justify-start gap-6">
-      {isFetching && isEmptyComments ? (
-        <CommentsLoader />
+      <NewCommentForm
+        postId={postId}
+        onSubmit={handleAddNewComment}
+        isLoadingSubmit={isLoadingAddNewComment}
+      />
+      {shouldShowSpinner ? (
+        <Spinner srText="Loading Comments..." />
       ) : (
         <>
-          <NewCommentForm postId={postId} onSubmit={handleAddNewComment} />
           <div className="text-xl font-bold text-white">{`Comments (${commentsCount})`}</div>
-          {sortedComments && (
-            <div className="flex flex-col gap-4">
-              {sortedComments.map((comment) => (
-                <CommentItem key={comment.id} comment={comment} />
-              ))}
-            </div>
-          )}
+          <div className="flex flex-col gap-4">
+            {sortedComments.map((comment) => (
+              <CommentItem key={comment.id} comment={comment} />
+            ))}
+          </div>
         </>
       )}
     </div>

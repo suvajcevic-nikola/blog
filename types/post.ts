@@ -13,3 +13,5 @@ export type Comment = {
   text: string;
   createdAt: number;
 };
+
+export type NewComment = Omit<Comment, "id" | "createdAt">;
