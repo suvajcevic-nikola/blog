@@ -121,9 +121,10 @@ const NewCommentForm = ({
 
 const PostComments = ({ postId }: PostArticleProps) => {
   const {
-    isFetching: isFetchingComments,
+    isLoading: isLoadingComments,
     isError: isErrorComments,
     comments,
+    commentsCount,
     error: commentsError,
     refetch: refetchComments,
   } = useComments(postId);
@@ -135,17 +136,6 @@ const PostComments = ({ postId }: PostArticleProps) => {
       onError: onAddNewCommentError,
     },
   );
-
-  const sortedComments = useMemo(() => {
-    return Array.isArray(comments)
-      ? comments.sort((a, b) => a.createdAt - b.createdAt)
-      : [];
-  }, [comments]);
-
-  const commentsCount = sortedComments.length;
-  const isEmptyComments = commentsCount < 1;
-
-  const shouldShowSpinner = isFetchingComments && isEmptyComments;
 
   const handleAddNewComment = async (comment: NewComment) => {
     await addNewComment(comment);
@@ -170,13 +160,13 @@ const PostComments = ({ postId }: PostArticleProps) => {
         onSubmit={handleAddNewComment}
         isLoadingSubmit={isLoadingAddNewComment}
       />
-      {shouldShowSpinner ? (
+      {isLoadingComments ? (
         <Spinner srText="Loading Comments..." />
       ) : (
         <>
           <div className="text-xl font-bold text-white">{`Comments (${commentsCount})`}</div>
           <div className="flex flex-col gap-4">
-            {sortedComments.map((comment) => (
+            {comments.map((comment) => (
               <CommentItem key={comment.id} comment={comment} />
             ))}
           </div>
