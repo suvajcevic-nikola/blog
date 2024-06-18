@@ -14,7 +14,7 @@ const useDeleteComment = ({
   onSuccess,
   onError,
 }: UseDeleteCommentParams) => {
-  const endpoint = `/post/${postId}/comments/${commentId}`;
+  const endpoint = `post/${postId}/comments/${commentId}`;
 
   const { isLoading, data, actionFn } = useAction({
     endpoint,

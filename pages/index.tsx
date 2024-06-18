@@ -1,8 +1,8 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { PageWithHead, PostsGrid, Spinner } from "@/components";
 import type { Post } from "@/types/post";
-import { API_BASE_URL } from "@/utils/constants";
 import dynamic from "next/dynamic";
+import { fetchService } from "@/lib/fetch";
 
 const DynamicErrorPlaceholder = dynamic(
   () =>
@@ -16,7 +16,7 @@ export const getServerSideProps = (async ({ res }) => {
   let posts: Post[] = [];
   let isError = false;
 
-  const response = await fetch(`${API_BASE_URL}/post`);
+  const response = await fetchService("post");
 
   if (response.ok) {
     posts = await response.json();

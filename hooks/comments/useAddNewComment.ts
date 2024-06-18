@@ -13,7 +13,7 @@ const useAddNewComment = ({
   onSuccess,
   onError,
 }: UseAddNewCommentParams) => {
-  const endpoint = `/post/${postId}/comments`;
+  const endpoint = `post/${postId}/comments`;
 
   const { isLoading, data, actionFn } = useAction<NewComment>({
     endpoint,

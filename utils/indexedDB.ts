@@ -1,4 +1,4 @@
-const DB_NAME = "myDatabase";
+const DB_NAME = "db";
 const DB_VERSION = 1;
 
 export const openDB = () => {

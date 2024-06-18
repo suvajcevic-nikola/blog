@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
 import type { CustomError } from "@/types/data";
-import { API_BASE_URL } from "@/utils/constants";
+import { AllowedMethods, fetchService, RInit } from "@/lib/fetch";
 
 type ActionParams = {
   endpoint: string;
-  method?: "POST" | "PUT" | "DELETE" | "PATCH" | "GET";
+  method?: AllowedMethods;
   onSuccess?: (response: any) => void;
   onError?: (error: any) => void;
 };
@@ -22,14 +22,14 @@ const useAction = <T>({
     async (body?: T) => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-          method: method,
+        const requestInit: RInit = {
+          method,
           headers: {
             "Content-Type": "application/json",
           },
-          body: body && JSON.stringify(body),
-        });
-
+        };
+        body && (requestInit.body = JSON.stringify(body));
+        const response = await fetchService(endpoint, requestInit);
         const responseData = await response.json();
         if (response.ok) {
           setData(responseData);

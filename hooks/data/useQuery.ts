@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { CustomError } from "@/types/data";
-import { API_BASE_URL } from "@/utils/constants";
 import { getFromDB, setToDB } from "@/utils/indexedDB";
+import { fetchService } from "@/lib/fetch";
 
 const useQuery = <T>(endpoint: string, cacheKey: string) => {
   const [isFetching, setIsFetching] = useState(false);
@@ -15,7 +15,7 @@ const useQuery = <T>(endpoint: string, cacheKey: string) => {
     setIsError(false);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/${endpoint}`);
+      const response = await fetchService(endpoint);
       const responseData = await response.json();
       if (!response.ok) {
         const err: CustomError = new Error();

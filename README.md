@@ -1,2 +1,2 @@
 This is a Blog built for Coding Challenge.
-Deployed on Vercel: [Blog](https://blog-one-eosin-42.vercel.app/)
+Deployed on Google Cloud: [Blog](https://blog-hxqfph3ema-oa.a.run.app)

@@ -1,11 +1,11 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import type { Post } from "@/types/post";
 import { PageWithHead, PostArticle } from "@/components";
-import { API_BASE_URL } from "@/utils/constants";
+import { fetchService } from "@/lib/fetch";
 
 export const getServerSideProps = (async ({ params }) => {
   const postId = params?.id;
-  const response = await fetch(`${API_BASE_URL}/post/${postId}`);
+  const response = await fetchService(`post/${postId}`);
 
   if (!response.ok) {
     return {
