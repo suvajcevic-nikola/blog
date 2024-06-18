@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import type { CustomError } from "@/types/data";
 import { API_BASE_URL } from "@/utils/constants";
+import { getFromDB, setToDB } from "@/utils/indexedDB";
 
-const useQuery = <T>(endpoint: string) => {
+const useQuery = <T>(endpoint: string, cacheKey: string) => {
   const [isFetching, setIsFetching] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<CustomError | null>(null);
   const [data, setData] = useState<T | T[] | null>(null);
@@ -11,6 +13,7 @@ const useQuery = <T>(endpoint: string) => {
   const fetchData = useCallback(async () => {
     setIsFetching(true);
     setIsError(false);
+
     try {
       const response = await fetch(`${API_BASE_URL}/${endpoint}`);
       const responseData = await response.json();
@@ -21,7 +24,11 @@ const useQuery = <T>(endpoint: string) => {
         err.status = response.status;
         throw err;
       }
-      setData(responseData);
+
+      if (JSON.stringify(responseData) !== JSON.stringify(data)) {
+        setData(responseData);
+        await setToDB("blog", cacheKey, responseData);
+      }
     } catch (error) {
       const err = error as CustomError;
       console.error(err);
@@ -34,17 +41,34 @@ const useQuery = <T>(endpoint: string) => {
     } finally {
       setIsFetching(false);
     }
-  }, [endpoint]);
+  }, [endpoint, cacheKey, data]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    const loadData = async () => {
+      setIsLoading(true);
+
+      try {
+        const cachedData = await getFromDB<T>("blog", cacheKey);
+        if (cachedData) {
+          setData(cachedData);
+        }
+      } catch (e) {
+        console.error("Error fetching from IndexedDB:", e);
+      } finally {
+        setIsLoading(false);
+      }
+
+      fetchData();
+    };
+
+    loadData();
+  }, []);
 
   const refetch = useCallback(() => {
     fetchData();
   }, [fetchData]);
 
-  return { isFetching, isError, data, error, refetch };
+  return { isFetching, isLoading, isError, data, error, refetch };
 };
 
 export default useQuery;
