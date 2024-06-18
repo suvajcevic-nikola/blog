@@ -5,10 +5,11 @@ import { fetchService } from "@/lib/fetch";
 
 const useQuery = <T>(endpoint: string, cacheKey: string) => {
   const [isFetching, setIsFetching] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<CustomError | null>(null);
   const [data, setData] = useState<T | T[] | null>(null);
+
+  const isLoading = isFetching && !data;
 
   const fetchData = useCallback(async () => {
     setIsFetching(true);
@@ -45,8 +46,6 @@ const useQuery = <T>(endpoint: string, cacheKey: string) => {
 
   useEffect(() => {
     const loadData = async () => {
-      setIsLoading(true);
-
       try {
         const cachedData = await getFromDB<T>("blog", cacheKey);
         if (cachedData) {
@@ -54,8 +53,6 @@ const useQuery = <T>(endpoint: string, cacheKey: string) => {
         }
       } catch (e) {
         console.error("Error fetching from IndexedDB:", e);
-      } finally {
-        setIsLoading(false);
       }
 
       fetchData();
