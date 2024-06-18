@@ -1,22 +1,35 @@
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import {
+  ButtonHTMLAttributes,
+  ReactNode,
+  ForwardRefRenderFunction,
+  forwardRef,
+} from "react";
+import { cls } from "@/utils/helper";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
 };
 
-const Button = ({ children, ...elementProps }: ButtonProps) => {
+const Button: ForwardRefRenderFunction<HTMLButtonElement, ButtonProps> = (
+  { children, className, role = "button", ...elementProps },
+  ref,
+) => {
   const isDisabled = elementProps.disabled;
 
   return (
     <button
       {...elementProps}
-      className={`rounded-full bg-fuchsia-500 px-4 py-2 font-bold text-white ${isDisabled ? "cursor-not-allowed opacity-50" : "hover:bg-fuchsia-700"}`}
-      aria-disabled={isDisabled}
-      role="button"
+      ref={ref}
+      className={cls(
+        className,
+        "rounded-full bg-fuchsia-600 px-4 py-2 font-bold text-white",
+        isDisabled ? "cursor-not-allowed opacity-50" : "hover:bg-fuchsia-700",
+      )}
+      role={role}
     >
       {children}
     </button>
   );
-}
+};
 
-export default Button;
+export default forwardRef(Button);

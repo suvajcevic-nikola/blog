@@ -7,7 +7,7 @@ export default function Document() {
         <meta name="description" content="Blog App" />
         <meta charSet="utf-8" />
       </Head>
-      <body className="bg-neutral-800">
+      <body className="bg-neutral-900">
         <Main />
         <NextScript />
       </body>

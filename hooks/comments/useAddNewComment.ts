@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import useAction from "../data/useAction";
 import type { NewComment } from "@/types/post";
 
@@ -14,13 +15,16 @@ const useAddNewComment = ({
 }: UseAddNewCommentParams) => {
   const endpoint = `/post/${postId}/comments`;
 
-  const { isLoading, data, postData } = useAction<NewComment>({
+  const { isLoading, data, actionFn } = useAction<NewComment>({
     endpoint,
     onSuccess,
     onError,
   });
 
-  const addNewComment = (comment: NewComment) => postData(comment);
+  const addNewComment = useCallback(
+    (comment: NewComment) => actionFn(comment),
+    [actionFn],
+  );
 
   return { isLoading, data, addNewComment };
 };

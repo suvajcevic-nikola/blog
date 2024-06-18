@@ -2,21 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import type { CustomError } from "@/types/data";
 import { API_BASE_URL } from "@/utils/constants";
 
-type ReturnData<T> = T | T[] | null;
-
-type UseQueryResult<T> = {
-  isFetching: boolean;
-  isError: boolean;
-  data: ReturnData<T>;
-  error: CustomError | null;
-  refetch: () => void;
-};
-
-const useQuery = <T>(endpoint: string): UseQueryResult<T> => {
+const useQuery = <T>(endpoint: string) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<CustomError | null>(null);
-  const [data, setData] = useState<ReturnData<T>>(null);
+  const [data, setData] = useState<T | T[] | null>(null);
 
   const fetchData = useCallback(async () => {
     setIsFetching(true);
