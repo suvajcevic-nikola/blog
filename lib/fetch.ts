@@ -1,4 +1,4 @@
-const _API_BASE_URL = "https://5ebd9842ec34e900161923e7.mockapi.io";
+const _API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export type AllowedMethods = "GET" | "POST" | "PUT" | "DELETE" | "OPTIONS";
 export type RInit = {
