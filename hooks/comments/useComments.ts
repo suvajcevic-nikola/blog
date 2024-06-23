@@ -3,9 +3,10 @@ import useQuery from "../data/useQuery";
 import type { Comment } from "@/types/post";
 
 const useComments = (postId: string) => {
-  const endpoint = `/post/${postId}/comments`;
-  const { isFetching, isError, data, error, refetch } =
-    useQuery<Comment>(endpoint);
+  const endpoint = `post/${postId}/comments`;
+  const cacheKey = `comments-${postId}`;
+  const { isFetching, isLoading, isError, data, error, refetch } =
+    useQuery<Comment>(endpoint, cacheKey);
 
   const sortedComments = useMemo(() => {
     return Array.isArray(data)
@@ -14,9 +15,6 @@ const useComments = (postId: string) => {
   }, [data]);
 
   const commentsCount = sortedComments.length;
-  const isEmptyComments = commentsCount < 1;
-
-  const isLoading = isFetching && isEmptyComments;
 
   return {
     isFetching,

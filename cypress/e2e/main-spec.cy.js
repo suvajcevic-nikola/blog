@@ -1,18 +1,22 @@
 describe("Add Main Flow", () => {
   it("Opens the Posts page, clicks on the first Blog Post, and mocks submitting the New Comment form.", () => {
-    cy.visit("http://localhost:3000");
-    cy.get('[data-test="posts-grid"]').should("exist");
-    cy.get('[data-test="posts-grid"] > :nth-child(1)').click();
-    cy.url().should("include", "/post");
-    cy.get('[data-test="post-article"]').should("exist");
-    cy.get('[data-test="new-comment-form"]').should("exist");
-    cy.get('[data-test="new-comment-form"]')
-      .get("input[name=name]")
-      .type("Test Name");
-    cy.get('[data-test="new-comment-form"]')
-      .get("textarea[name=comment]")
-      .type("Test Comment");
-    cy.get("button[type=submit]").should("exist");
+    cy.visitHomePage();
+    cy.checkElementExists('[data-testid="posts-grid"]');
+    cy.clickFirstChild('[data-testid="posts-grid"]');
+    cy.checkUrlIncludes("/post");
+    cy.checkElementExists('[data-testid="post-article"]');
+    cy.checkElementExists('[data-testid="new-comment-form"]');
+    cy.typeIntoFormField(
+      '[data-testid="new-comment-form"]',
+      "input[name=name]",
+      "Test Name",
+    );
+    cy.typeIntoFormField(
+      '[data-testid="new-comment-form"]',
+      "textarea[name=comment]",
+      "Test Comment",
+    );
+    cy.checkElementExists("button[type=submit]");
     cy.log("New comment is submitted");
   });
 });

@@ -1,28 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
 import type { CustomError } from "@/types/data";
-import { API_BASE_URL } from "@/utils/constants";
+import { getFromDB, setToDB } from "@/utils/indexedDB";
+import { fetchService } from "@/lib/fetch";
 
-type ReturnData<T> = T | T[] | null;
-
-type UseQueryResult<T> = {
-  isFetching: boolean;
-  isError: boolean;
-  data: ReturnData<T>;
-  error: CustomError | null;
-  refetch: () => void;
-};
-
-const useQuery = <T>(endpoint: string): UseQueryResult<T> => {
+const useQuery = <T>(endpoint: string, cacheKey: string) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState<CustomError | null>(null);
-  const [data, setData] = useState<ReturnData<T>>(null);
+  const [data, setData] = useState<T | T[] | null>(null);
+
+  const isLoading = isFetching && !data;
 
   const fetchData = useCallback(async () => {
     setIsFetching(true);
     setIsError(false);
+
     try {
-      const response = await fetch(`${API_BASE_URL}/${endpoint}`);
+      const response = await fetchService(endpoint);
       const responseData = await response.json();
       if (!response.ok) {
         const err: CustomError = new Error();
@@ -31,7 +25,11 @@ const useQuery = <T>(endpoint: string): UseQueryResult<T> => {
         err.status = response.status;
         throw err;
       }
-      setData(responseData);
+
+      if (JSON.stringify(responseData) !== JSON.stringify(data)) {
+        setData(responseData);
+        await setToDB("blog", cacheKey, responseData);
+      }
     } catch (error) {
       const err = error as CustomError;
       console.error(err);
@@ -44,17 +42,30 @@ const useQuery = <T>(endpoint: string): UseQueryResult<T> => {
     } finally {
       setIsFetching(false);
     }
-  }, [endpoint]);
+  }, [endpoint, cacheKey, data]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    const loadData = async () => {
+      try {
+        const cachedData = await getFromDB<T>("blog", cacheKey);
+        if (cachedData) {
+          setData(cachedData);
+        }
+      } catch (e) {
+        console.error("Error fetching from IndexedDB:", e);
+      }
+
+      fetchData();
+    };
+
+    loadData();
+  }, [cacheKey]);
 
   const refetch = useCallback(() => {
     fetchData();
   }, [fetchData]);
 
-  return { isFetching, isError, data, error, refetch };
+  return { isFetching, isLoading, isError, data, error, refetch };
 };
 
 export default useQuery;

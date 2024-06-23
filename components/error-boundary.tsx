@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from "react";
 import Button from "./button";
+import { title } from "process";
 
 type State = {
   hasError: boolean;
@@ -8,6 +9,21 @@ type State = {
 type Props = {
   children: ReactNode;
 };
+
+export const ErrorPlaceholder = ({
+  title = "Something went wrong.",
+  buttonTitle,
+  onButtonClick,
+}: {
+  title?: string;
+  buttonTitle: string;
+  onButtonClick: () => void;
+}) => (
+  <div className="flex h-screen w-full flex-col items-center justify-center gap-4">
+    <p className="text-xl font-bold text-white">{title}</p>
+    <Button onClick={onButtonClick}>{buttonTitle}</Button>
+  </div>
+);
 
 class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -26,12 +42,10 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-4">
-          <p className="text-xl font-bold text-white">Something went wrong.</p>
-          <Button onClick={() => this.setState({ hasError: false })}>
-            Try again?
-          </Button>
-        </div>
+        <ErrorPlaceholder
+          buttonTitle="Try again?"
+          onButtonClick={() => this.setState({ hasError: false })}
+        />
       );
     }
 

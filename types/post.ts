@@ -9,9 +9,9 @@ export type Post = {
 export type Comment = {
   id: string;
   postId: string;
+  createdAt: number;
   name: string;
   text: string;
-  createdAt: number;
 };
 
 export type NewComment = Omit<Comment, "id" | "createdAt">;

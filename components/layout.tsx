@@ -7,14 +7,10 @@ import githubIcon from "@/public/github.svg";
 
 const inter = Inter({ subsets: ["latin"] });
 
-type LayoutProps = {
-  children: ReactElement | ReactElement[];
-};
-
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children }: { children: ReactElement | ReactElement[] }) => {
   return (
     <div className={`m-auto flex max-w-[1920px] flex-col ${inter.className}`}>
-      <header className="fixed flex h-28 w-full items-center justify-center border-2 border-neutral-400 px-8 backdrop-blur-sm sm:static">
+      <header className="fixed z-50 flex h-28 w-full items-center justify-center border-2 border-neutral-400 px-8 backdrop-blur-sm sm:static">
         <Link href="/" className="text-center text-7xl font-bold text-white">
           BLOG
         </Link>
@@ -27,7 +23,7 @@ const Layout = ({ children }: LayoutProps) => {
           <span className="font-light italic">by </span>
           <span>Nikola Suvajcevic</span>
         </p>
-        <Button>
+        <Button className="h-12">
           <Link
             href="https://github.com/suvajcevic-nikola/blog"
             target="_blank"

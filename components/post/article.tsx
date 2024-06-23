@@ -4,18 +4,19 @@ import PostTime from "./time";
 import PostText from "./text";
 import PostComments from "./comments";
 
-type PostArticleProps = {
-  post: Post;
-};
-
-const PostArticle = ({ post }: PostArticleProps) => {
+const PostArticle = ({ post }: { post: Post }) => {
   return (
-    <article data-test="post-article" className="mx-auto w-full max-w-[800px] space-y-8 p-8">
-      <PostTime>{post.createdAt}</PostTime>
-      <PostTitle>{post.title}</PostTitle>
-      <PostText>{post.text}</PostText>
-      <PostComments postId={post.id} />
-    </article>
+    <div
+      data-testid="post-article"
+      className="flex h-full w-full justify-center overflow-x-auto p-8"
+    >
+      <article className="mx-auto w-full max-w-[800px] space-y-8 p-8">
+        <PostTime>{post.createdAt}</PostTime>
+        <PostTitle>{post.title}</PostTitle>
+        <PostText>{post.text}</PostText>
+        <PostComments postId={post.id} />
+      </article>
+    </div>
   );
 };
 
