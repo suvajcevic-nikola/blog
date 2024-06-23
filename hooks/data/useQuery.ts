@@ -59,7 +59,7 @@ const useQuery = <T>(endpoint: string, cacheKey: string) => {
     };
 
     loadData();
-  }, []);
+  }, [cacheKey]);
 
   const refetch = useCallback(() => {
     fetchData();
